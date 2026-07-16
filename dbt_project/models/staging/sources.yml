@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: main
+    tables:
+      - name: raw_world_bank
+      - name: raw_upi_historical
+      - name: raw_climate_trace
+      - name: raw_npci_upi
+      - name: raw_npci_imps
