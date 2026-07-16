@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: mart_india_development
+    description: "Master India development table joining economy, digital, and emissions data"
+    columns:
+      - name: year
+        description: "Year"
+        tests:
+          - not_null
+          - unique
+      - name: gdp_trillion_usd
+        description: "GDP in trillion USD"
+        tests:
+          - not_null
+
+  - name: mart_emissions_by_sector
+    description: "India emissions broken down by sector with share and YoY change"
+    columns:
+      - name: year
+        tests:
+          - not_null
+      - name: sector
+        tests:
+          - not_null
+      - name: sector_share_pct
+        tests:
+          - not_null

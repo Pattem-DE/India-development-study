@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: stg_world_bank
+    description: "Cleaned World Bank India development indicators 2000-2024"
+    columns:
+      - name: year
+        description: "Year of the indicator"
+        tests:
+          - not_null
+      - name: indicator_name
+        description: "Name of the indicator"
+        tests:
+          - not_null
+      - name: value
+        description: "Value of the indicator"
+        tests:
+          - not_null
+
+  - name: stg_upi_historical
+    description: "UPI transaction history April 2016 to August 2025"
+    columns:
+      - name: month_date
+        description: "First day of the month"
+        tests:
+          - not_null
+          - unique
+      - name: volume_mn
+        description: "Transaction volume in millions"
+        tests:
+          - not_null
+
+  - name: stg_climate_trace
+    description: "India emissions by sector 2015-2024 from Climate TRACE"
+    columns:
+      - name: year
+        description: "Emissions year"
+        tests:
+          - not_null
+      - name: sector
+        description: "Emission sector"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [
+                'power', 'transportation', 'manufacturing',
+                'fossil-fuel-operations', 'agriculture',
+                'buildings', 'waste', 'forestry-and-land-use'
+              ]
+      - name: co2e_100yr_million_tonnes
+        description: "CO2 equivalent emissions in million tonnes"
+        tests:
+          - not_null
