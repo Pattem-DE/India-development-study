@@ -82,7 +82,7 @@ This project went through some issue debugging as mentioned below:
 ├── data/raw/                 # Local DuckDB file (gitignored)
 ├── Dockerfile                # Custom Airflow image with dependencies
 ├── docker-compose.yaml        # Full Airflow + Postgres stack
-└── requirements.txt
+└── requirements.txt """
 
 ## Planned Improvements
 - TRAI state-level telecom subscriber data
