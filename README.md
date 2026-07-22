@@ -22,12 +22,12 @@ largest real-time payments network — all in 10 years?
 - **Metabase** — dashboarding (coming soon)
 ## Architecture
 Raw Sources (API/Kaggle)
- → Python Ingestion Scripts
- → DuckDB (raw layer)
- → dbt staging (clean + standardize)
- → dbt intermediate (join across sources)
- → dbt marts (analytics-ready tables)
- → Airflow orchestrates the entire flow end-to-end
+→ Python Ingestion Scripts
+→ DuckDB (raw layer)
+→ dbt staging (clean + standardize)
+→ dbt intermediate (join across sources)
+→ dbt marts (analytics-ready tables)
+→ Airflow orchestrates the entire flow end-to-end
 
 ## Orchestration
 The full pipeline runs as a single Airflow DAG (`india_development_pipeline`):
@@ -57,7 +57,7 @@ Airflow runs entirely inside Docker (official `docker-compose.yaml`), using:
 - 2020 (COVID) shows a clear dip: GDP -5.67%, emissions dropped, but UPI still grew
 
 ## Engineering Notes — Real Issues Hit and Fixed
-This project went through genuine production-style debugging:
+This project went through some issue debugging as mentioned below:
 - **Idempotency bug**: World Bank ingestion was using `INSERT` without 
   clearing old data first — every DAG re-run duplicated rows (158 → 632). 
   Fixed by switching to `DROP TABLE` + `CREATE TABLE` like the other scripts.
@@ -72,17 +72,17 @@ This project went through genuine production-style debugging:
   file and dbt logs. Fixed with proper directory permissions.
 
 ## Project Structure
-├── dags/ # Airflow DAG definitions
- ├── dbt_project/ # dbt models, tests, docs
- │ ├── models/
- │ │ ├── staging/
- │ │ ├── intermediate/
- │ │ └── marts/
- ├── ingestion/ # Python ingestion scripts
- ├── data/raw/ # Local DuckDB file (gitignored)
- ├── Dockerfile # Custom Airflow image with dependencies
- ├── docker-compose.yaml # Full Airflow + Postgres stack
- └── requirements.txt
+├── dags/                   # Airflow DAG definitions
+├── dbt_project/            # dbt models, tests, docs
+│   ├── models/
+│   │   ├── staging/
+│   │   ├── intermediate/
+│   │   └── marts/
+├── ingestion/               # Python ingestion scripts
+├── data/raw/                 # Local DuckDB file (gitignored)
+├── Dockerfile                # Custom Airflow image with dependencies
+├── docker-compose.yaml        # Full Airflow + Postgres stack
+└── requirements.txt
 
 ## Planned Improvements
 - TRAI state-level telecom subscriber data
