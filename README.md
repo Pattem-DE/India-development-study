@@ -71,7 +71,7 @@ This project went through some issue debugging as mentioned below:
   user than the WSL2 host, causing write-permission errors on the DuckDB 
   file and dbt logs. Fixed with proper directory permissions.
 
-"""## Project Structure
+```## Project Structure
 ├── dags/                   # Airflow DAG definitions
 ├── dbt_project/            # dbt models, tests, docs
 │   ├── models/
@@ -82,7 +82,8 @@ This project went through some issue debugging as mentioned below:
 ├── data/raw/                 # Local DuckDB file (gitignored)
 ├── Dockerfile                # Custom Airflow image with dependencies
 ├── docker-compose.yaml        # Full Airflow + Postgres stack
-└── requirements.txt """
+└── requirements.txt
+```
 
 ## Planned Improvements
 - TRAI state-level telecom subscriber data
