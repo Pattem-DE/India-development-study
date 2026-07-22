@@ -22,12 +22,12 @@ largest real-time payments network — all in 10 years?
 - **Metabase** — dashboarding (coming soon)
 ## Architecture
 Raw Sources (API/Kaggle)
-→ Python Ingestion Scripts
-→ DuckDB (raw layer)
-→ dbt staging (clean + standardize)
-→ dbt intermediate (join across sources)
-→ dbt marts (analytics-ready tables)
-→ Airflow orchestrates the entire flow end-to-end
+- Python Ingestion Scripts
+- DuckDB (raw layer)
+- dbt staging (clean + standardize)
+- dbt intermediate (join across sources)
+- dbt marts (analytics-ready tables)
+- Airflow orchestrates the entire flow end-to-end
 
 ## Orchestration
 The full pipeline runs as a single Airflow DAG (`india_development_pipeline`):
@@ -71,7 +71,7 @@ This project went through some issue debugging as mentioned below:
   user than the WSL2 host, causing write-permission errors on the DuckDB 
   file and dbt logs. Fixed with proper directory permissions.
 
-## Project Structure
+"""## Project Structure
 ├── dags/                   # Airflow DAG definitions
 ├── dbt_project/            # dbt models, tests, docs
 │   ├── models/
