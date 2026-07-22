@@ -22,3 +22,18 @@ logs/
 # DuckDB
 *.duckdb
 *.duckdb.wal
+
+# Airflow (Docker)
+airflow/logs/
+airflow/plugins/
+dags/__pycache__/
+
+# dbt profiles (contains local paths)
+.dbt/
+
+# Docker
+*.pid
+dags/__pycache__/
+**/__pycache__/
+dags/__pycache__/
+**/__pycache__/

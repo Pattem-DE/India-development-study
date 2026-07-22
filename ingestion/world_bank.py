@@ -63,14 +63,10 @@ def save_to_duckdb(df, table_name, db_path="data/raw/india_dev.duckdb"):
     
     con = duckdb.connect(db_path)
     
-    # Create table if not exists, append if it does
+    # Drop and recreate - ensures re-running doesn't duplicate data
+    con.execute(f"DROP TABLE IF EXISTS {table_name}")
     con.execute(f"""
-        CREATE TABLE IF NOT EXISTS {table_name} AS 
-        SELECT * FROM df WHERE 1=0
-    """)
-    
-    con.execute(f"""
-        INSERT INTO {table_name} 
+        CREATE TABLE {table_name} AS
         SELECT * FROM df
     """)
     
