@@ -70,8 +70,10 @@ This project went through some issue debugging as mentioned below:
 - **File permission conflicts**: The Airflow container runs as a different 
   user than the WSL2 host, causing write-permission errors on the DuckDB 
   file and dbt logs. Fixed with proper directory permissions.
+  
+## Project Structure
 
-```## Project Structure
+```
 ├── dags/                   # Airflow DAG definitions
 ├── dbt_project/            # dbt models, tests, docs
 │   ├── models/
