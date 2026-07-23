@@ -5,6 +5,14 @@ development story from 2015 to 2025.
 How did a country of 1.4 billion people nearly double its GDP,
 grow internet penetration from 15% to 65%, and build the world's
 largest real-time payments network — all in 10 years?
+
+## 🔗 Live Dashboard
+
+**[View the interactive dashboard →](https://india-development-study.streamlit.app)**
+
+Explore all 3 models live: UPI payment forecasting, GDP vs emissions decoupling,
+and India's data-driven development eras.
+
 ## Data Sources
 | Source | Data | Rows | Status |
 |--------|------|------|--------|
