@@ -37,3 +37,7 @@ dags/__pycache__/
 **/__pycache__/
 dags/__pycache__/
 **/__pycache__/
+
+# Exception: commit the DuckDB file itself for Streamlit Cloud deployment
+# (all raw CSVs/JSONs in data/raw/ stay excluded, just this one processed file is tracked)
+!data/raw/india_dev.duckdb
