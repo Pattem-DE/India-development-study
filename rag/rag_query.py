@@ -1,0 +1,83 @@
+from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.llms import Ollama
+from langchain_postgres import PGVector
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnableParallel, RunnablePassthrough
+from domain_terms import expand_query
+
+CONNECTION_STRING = "postgresql+psycopg2://airflow:airflow@localhost:5432/airflow"
+COLLECTION_NAME = "india_policy_docs"
+
+embeddings = OllamaEmbeddings(model="nomic-embed-text")
+vectorstore = PGVector(
+    embeddings=embeddings,
+    collection_name=COLLECTION_NAME,
+    connection=CONNECTION_STRING,
+)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 8})
+
+llm = Ollama(model="llama3.2:3b", temperature=0)
+
+prompt_template = """Use the following context from Indian government policy documents to answer the question.
+
+Structure your answer in exactly this format:
+
+**What the documents show:** State the specific facts, numbers, schemes, and
+programs found in the context that relate to the question, citing which
+document each comes from. Be direct and specific - use real numbers and names,
+not vague summaries.
+
+**Gap:** Only include this section if the documents don't fully answer the
+question as asked. State plainly what specific information is missing, in
+one or two sentences. Skip this section entirely if the documents fully
+answer the question.
+
+Never fabricate information that isn't in the context. Be careful with dates -
+if a number is tied to a different year than the one asked about, say so
+explicitly rather than implying it answers the question as asked.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:"""
+
+prompt = PromptTemplate.from_template(prompt_template)
+
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+# Modern LCEL RAG chain - retrieves docs, formats context, generates answer,
+# while still returning the source documents for citation
+rag_chain_from_docs = (
+    {
+        "context": lambda x: format_docs(x["context"]),
+        "question": lambda x: x["question"],
+    }
+    | prompt
+    | llm
+    | StrOutputParser()
+)
+
+rag_chain = RunnableParallel(
+    {"context": retriever, "question": RunnablePassthrough()}
+).assign(answer=rag_chain_from_docs)
+
+
+def ask(question):
+    expanded_question = expand_query(question)
+    if expanded_question != question:
+        print(f"[Query expanded to: {expanded_question}]")
+    result = rag_chain.invoke(expanded_question)
+    print(f"\nQ: {question}\n")
+    print(f"A: {result['answer']}\n")
+    sources = set(doc.metadata['source_file'] for doc in result['context'])
+    print("Sources:", sources)
+    print("=" * 80)
+
+if __name__ == "__main__":
+    ask("What specific milestones or targets has India outlined for zero-emission vehicles and charging infrastructure by 2030?")
+
+    ask("How did central budget allocations for public health change in recent Union Budgets?")
