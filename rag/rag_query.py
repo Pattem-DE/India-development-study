@@ -6,9 +6,17 @@ from domain_terms import expand_query
 from embeddings_provider import get_embeddings
 from llm_provider import get_llm
 
-CONNECTION_STRING = "postgresql+psycopg2://airflow:airflow@localhost:5432/airflow"
+import os
+
+# Local mode uses local Docker Postgres; cloud mode uses Supabase
+# (Streamlit Community Cloud can't reach a local Docker container)
+LOCAL_CONNECTION_STRING = "postgresql+psycopg2://airflow:airflow@localhost:5432/airflow"
+SUPABASE_CONNECTION_STRING = os.environ.get("SUPABASE_DB_URL", "").replace(
+    "postgresql://", "postgresql+psycopg2://"
+)
 
 embeddings, using_ollama = get_embeddings(return_mode=True)
+CONNECTION_STRING = LOCAL_CONNECTION_STRING if using_ollama else SUPABASE_CONNECTION_STRING
 
 # Different embedding models produce incompatible vector spaces - each
 # needs its own collection, embedded with that same model
