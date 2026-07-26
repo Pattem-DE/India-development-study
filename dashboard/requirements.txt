@@ -7,3 +7,9 @@ scikit-learn>=1.5.0
 prophet>=1.1.5
 statsmodels>=0.14.0
 duckdb>=1.5.0
+langchain
+langchain-community
+langchain-postgres
+langchain-groq
+sentence-transformers
+psycopg2-binary
