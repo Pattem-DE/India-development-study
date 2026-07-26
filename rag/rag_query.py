@@ -7,9 +7,13 @@ from embeddings_provider import get_embeddings
 from llm_provider import get_llm
 
 CONNECTION_STRING = "postgresql+psycopg2://airflow:airflow@localhost:5432/airflow"
-COLLECTION_NAME = "india_policy_docs"
 
-embeddings = get_embeddings()
+embeddings, using_ollama = get_embeddings(return_mode=True)
+
+# Different embedding models produce incompatible vector spaces - each
+# needs its own collection, embedded with that same model
+COLLECTION_NAME = "india_policy_docs" if using_ollama else "india_policy_docs_fallback"
+
 vectorstore = PGVector(
     embeddings=embeddings,
     collection_name=COLLECTION_NAME,
