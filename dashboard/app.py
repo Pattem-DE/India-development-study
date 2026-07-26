@@ -14,6 +14,14 @@ from features import get_upi_monthly_features, get_yearly_development_features
 
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "..", "ml", "models")
 
+# Bridge Streamlit Cloud secrets to environment variables so rag/ modules
+# (which read from os.environ) work identically whether run locally or deployed
+import os as _os
+if hasattr(st, "secrets"):
+    for _key in ["GROQ_API_KEY", "SUPABASE_DB_URL"]:
+        if _key in st.secrets:
+            _os.environ[_key] = st.secrets[_key]
+
 st.set_page_config(page_title="India Development Study", page_icon="🇮🇳", layout="wide")
 
 st.title("🇮🇳 India Development Study")
