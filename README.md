@@ -10,8 +10,8 @@ largest real-time payments network — all in 10 years?
 
 **[View the interactive dashboard →](https://india-development-study.streamlit.app)**
 
-Explore all 3 models live: UPI payment forecasting, GDP vs emissions decoupling,
-and India's data-driven development eras.
+Explore all 3 ML models plus an Agentic RAG system answering questions about India's
+policy documents, live in your browser - no local setup required.
 
 ## Data Sources
 | Source | Data | Rows | Status |
