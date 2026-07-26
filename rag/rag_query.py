@@ -1,15 +1,15 @@
-from langchain_community.embeddings import OllamaEmbeddings
-from langchain_community.llms import Ollama
 from langchain_postgres import PGVector
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from domain_terms import expand_query
+from embeddings_provider import get_embeddings
+from llm_provider import get_llm
 
 CONNECTION_STRING = "postgresql+psycopg2://airflow:airflow@localhost:5432/airflow"
 COLLECTION_NAME = "india_policy_docs"
 
-embeddings = OllamaEmbeddings(model="nomic-embed-text")
+embeddings = get_embeddings()
 vectorstore = PGVector(
     embeddings=embeddings,
     collection_name=COLLECTION_NAME,
@@ -17,7 +17,7 @@ vectorstore = PGVector(
 )
 retriever = vectorstore.as_retriever(search_kwargs={"k": 8})
 
-llm = Ollama(model="llama3.2:3b", temperature=0)
+llm = get_llm()
 
 prompt_template = """Use the following context from Indian government policy documents to answer the question.
 

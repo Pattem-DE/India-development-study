@@ -9,6 +9,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "ml"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "rag"))
 from features import get_upi_monthly_features, get_yearly_development_features
 
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "..", "ml", "models")
@@ -26,7 +27,7 @@ is digital payment growth still accelerating, is the economy growing "cleaner" a
 bigger, and what distinct chapters does India's growth story actually break into?
 """)
 
-tab1, tab2, tab3 = st.tabs(["📈 UPI Payment Forecast", "🌍 Growth vs Pollution", "🕰️ India's Growth Chapters"])
+tab1, tab2, tab3, tab4 = st.tabs(["📈 UPI Payment Forecast", "🌍 Growth vs Pollution", "🕰️ India's Growth Chapters", "🤖 Ask About India's Policies"])
 
 # ============================================================
 # TAB 1: UPI FORECAST
@@ -229,5 +230,68 @@ with tab3:
         **Note:** {eras_metrics_data['note']}
         """)
 
+
+# ============================================================
+# TAB 4: AGENTIC RAG - ASK ABOUT INDIA'S POLICIES
+# ============================================================
+with tab4:
+    st.header("Ask About India's Policies")
+
+    st.markdown("""
+    **What this is:** An AI assistant that answers questions using India's actual
+    government policy documents, not general internet knowledge. Ask about EV
+    infrastructure targets, healthcare schemes, or budget allocations, and get
+    an answer with direct citations back to the source document.
+
+    **Why this matters:** Generic AI chatbots can confidently state incorrect
+    facts about government policy. This system only answers from real, verified
+    government documents (Union Budget speeches, NITI Aayog reports) and clearly
+    states when the documents don't contain enough information, rather than
+    guessing.
+
+    **Documents this assistant has read:** Union Budget speeches (2023-2025),
+    NITI Aayog EV charging infrastructure reports.
+    """)
+
+    example_questions = [
+        "What are India's targets for EV charging infrastructure?",
+        "What healthcare schemes were announced in recent budgets?",
+        "What subsidies exist for EV charging station installation?",
+    ]
+
+    st.markdown("**Try an example question:**")
+    cols = st.columns(len(example_questions))
+    selected_example = None
+    for col, q in zip(cols, example_questions):
+        if col.button(q, use_container_width=True):
+            selected_example = q
+
+    user_question = st.text_input(
+        "Or type your own question:",
+        value=selected_example if selected_example else "",
+        placeholder="e.g. What are India's EV charging subsidies?"
+    )
+
+    if st.button("Ask", type="primary") and user_question:
+        with st.spinner("Searching policy documents and generating answer... (can take 30-60s on CPU)"):
+            try:
+                from rag_query import rag_chain
+                from domain_terms import expand_query
+
+                expanded = expand_query(user_question)
+                result = rag_chain.invoke(expanded)
+                sources = list(set(doc.metadata['source_file'] for doc in result['context']))
+
+                if expanded != user_question:
+                    st.caption(f"🔍 Query expanded to include related terms: *{expanded}*")
+
+                st.markdown(result['answer'])
+                st.markdown("---")
+                st.caption(f"📄 Sources: {', '.join(sources)}")
+
+            except Exception as e:
+                st.error(f"Something went wrong: {e}")
+                st.info("This feature requires Ollama running locally. It may not be available on the deployed cloud version.")
+
 st.markdown("---")
-st.caption("Data sources: World Bank, NPCI (via Kaggle), Climate TRACE, UPI historical data (2016-2025)")
+st.caption("Data sources: World Bank, NPCI (via Kaggle), Climate TRACE, UPI historical data (2016-2025), Union Budget speeches, NITI Aayog reports")
