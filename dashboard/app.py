@@ -15,12 +15,16 @@ from features import get_upi_monthly_features, get_yearly_development_features
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "..", "ml", "models")
 
 # Bridge Streamlit Cloud secrets to environment variables so rag/ modules
-# (which read from os.environ) work identically whether run locally or deployed
+# (which read from os.environ) work identically whether run locally or deployed.
+# Locally there's no secrets.toml file, so this is wrapped in a try/except -
+# local runs just use .bashrc env vars directly instead.
 import os as _os
-if hasattr(st, "secrets"):
+try:
     for _key in ["GROQ_API_KEY", "SUPABASE_DB_URL"]:
         if _key in st.secrets:
             _os.environ[_key] = st.secrets[_key]
+except Exception:
+    pass  # no secrets.toml locally - that's fine, uses shell env vars instead
 
 st.set_page_config(page_title="India Development Study", page_icon="🇮🇳", layout="wide")
 
@@ -267,16 +271,18 @@ with tab4:
         "What subsidies exist for EV charging station installation?",
     ]
 
+    if "rag_question" not in st.session_state:
+        st.session_state.rag_question = ""
+
     st.markdown("**Try an example question:**")
     cols = st.columns(len(example_questions))
-    selected_example = None
     for col, q in zip(cols, example_questions):
         if col.button(q, use_container_width=True):
-            selected_example = q
+            st.session_state.rag_question = q
 
     user_question = st.text_input(
         "Or type your own question:",
-        value=selected_example if selected_example else "",
+        key="rag_question",
         placeholder="e.g. What are India's EV charging subsidies?"
     )
 
