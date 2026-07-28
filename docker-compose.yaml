@@ -54,6 +54,9 @@ x-airflow-common:
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
+    OLLAMA_BASE_URL: "http://ollama:11434"
+    SUPABASE_DB_URL: ${SUPABASE_DB_URL}
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
@@ -118,6 +121,13 @@ services:
       start_period: 30s
     restart: always
 
+  ollama:
+    image: ollama/ollama:latest
+    expose:
+      - 11434
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: always
   airflow-webserver:
     <<: *airflow-common
     command: webserver
@@ -289,3 +299,4 @@ services:
 
 volumes:
   postgres-db-volume:
+  ollama_data:

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from airflow import DAG
+from slack_alerts import slack_failure_alert
 from airflow.operators.bash import BashOperator
 
 default_args = {
@@ -7,6 +8,7 @@ default_args = {
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
     'email_on_failure': False,
+    'on_failure_callback': slack_failure_alert,
 }
 
 PROJECT_DIR = '/opt/airflow/project'

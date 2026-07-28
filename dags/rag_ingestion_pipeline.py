@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from airflow import DAG
+from slack_alerts import slack_failure_alert
 from airflow.operators.bash import BashOperator
 
 default_args = {
@@ -7,6 +8,7 @@ default_args = {
     'retries': 2,
     'retry_delay': timedelta(minutes=10),
     'email_on_failure': False,
+    'on_failure_callback': slack_failure_alert,
 }
 
 PROJECT_DIR = '/opt/airflow/project'
@@ -37,12 +39,12 @@ with DAG(
 
     reembed_local = BashOperator(
         task_id='reembed_local_ollama',
-        bash_command=f'cd {PROJECT_DIR} && python rag/ingestion/embed_and_store.py',
+        bash_command=f'cd {PROJECT_DIR} && python rag/ingestion/embed_and_store_raw.py',
     )
 
     reembed_cloud = BashOperator(
         task_id='reembed_supabase_cloud',
-        bash_command=f'cd {PROJECT_DIR} && python rag/ingestion/embed_supabase.py',
+        bash_command=f'cd {PROJECT_DIR} && python rag/ingestion/embed_supabase_raw.py',
     )
 
     fetch_budget >> rechunk >> [reembed_local, reembed_cloud]
@@ -73,12 +75,12 @@ with DAG(
 
     reembed_local_niti = BashOperator(
         task_id='reembed_local_ollama',
-        bash_command=f'cd {PROJECT_DIR} && python rag/ingestion/embed_and_store.py',
+        bash_command=f'cd {PROJECT_DIR} && python rag/ingestion/embed_and_store_raw.py',
     )
 
     reembed_cloud_niti = BashOperator(
         task_id='reembed_supabase_cloud',
-        bash_command=f'cd {PROJECT_DIR} && python rag/ingestion/embed_supabase.py',
+        bash_command=f'cd {PROJECT_DIR} && python rag/ingestion/embed_supabase_raw.py',
     )
 
     fetch_niti >> rechunk_niti >> [reembed_local_niti, reembed_cloud_niti]
